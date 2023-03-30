@@ -116,6 +116,25 @@ if ! shopt -oq posix; then
   fi
 fi
 
+function import_host_certs_wsl () {
+	# Use powershell to export host certs matching the first argument
+	if [ $# -eq 0 ]
+	then
+		echo "Supply a matching string as argument (eg, 'BD' to match all certs with BD in the name)"
+		return
+	fi
+		
+	powershell.exe -c '$i=0; foreach($cert in @(Get-ChildItem "cert:\LocalMachine" -recurse | Where-Object { $_.Subject -match "CN='"$1"'" })) { Export-Certificate -Cert $cert -FilePath host-cert$i.cer -Type CERT; $i++ }'
+	for cert in host-cert*.cer
+	do
+		newname=${cert%cer}crt
+		openssl x509 -inform der -in "$cert" -out "$newname"
+		sudo mv "$newname" /usr/local/share/ca-certificates/
+		rm "$cert"
+	done
+	sudo update-ca-certificates
+
+}
 
 export PATH=$PATH:/home/keegan/.local/bin
 
