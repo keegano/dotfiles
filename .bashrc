@@ -63,15 +63,6 @@ else
 fi
 unset color_prompt force_color_prompt
 
-# If this is an xterm set the title to user@host:dir
-case "$TERM" in
-xterm*|rxvt*)
-    PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
-    ;;
-*)
-    ;;
-esac
-
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
     test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
@@ -116,7 +107,59 @@ if ! shopt -oq posix; then
   fi
 fi
 
+export PATH=$PATH:/home/keegan/.local/bin
+
+# Are we Debian?
+if [ -f "/etc/debian_version" ]; then
+	DEBIAN=y
+fi
+
+function install_nvim () {
+	if [ -n "$DEBIAN" ]; then
+		curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb --output nvim-linux64.deb
+		sudo apt install ./nvim-linux64.deb
+	else
+		mkdir -p "$HOME/.local/bin"
+		curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output "$HOME/.local/bin/nvim"
+		chmod +x "$HOME/.local/bin/nvim"
+	fi
+	git clone --depth 1 https://github.com/wbthomason/packer.nvim\
+ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+}
+
 function import_host_certs_wsl () {
+    powershell.exe -c - << 'EOF'
+$certificateType = [System.Security.Cryptography.X509Certificates.X509Certificate2]
+
+$includedStores = @("TrustedPublisher", "Root", "CA", "AuthRoot")
+
+$certificates = $includedStores.ForEach({
+    Get-ChildItem Cert:\CurrentUser\$_ | Where-Object { $_ -is $certificateType}
+})
+
+$pemCertificates = $certificates.ForEach({
+    $pemCertificateContent = [System.Convert]::ToBase64String($_.RawData,1)
+    "-----BEGIN CERTIFICATE-----`n${pemCertificateContent}`n-----END CERTIFICATE-----"
+})
+
+$uniquePemCertificates = $pemCertificates | select -Unique
+
+($uniquePemCertificates | Out-String).Replace("`r", "") | Out-File -Encoding UTF8 win-ca-certificates.crt
+EOF
+    NUM_CERTS=$(grep "BEGIN CERTIFICATE" win-ca-certificates.crt | wc -l)
+    echo "Importing $NUM_CERTS certificates from host..."
+    # chomp trailing newline
+    # perl -pi -e 'chomp if eof' win-ca-certificates.crt
+    sudo mv win-ca-certificates.crt /usr/local/share/ca-certificates/
+	sudo update-ca-certificates -f
+}
+
+function install_handy_packages () {
+    sudo apt install ripgrep fd-find fzf build-essential git 
+}
+
+# Broken, don't use
+function import_host_certs_wsl_broken () {
 	# Use powershell to export host certs matching the first argument
 	if [ $# -eq 0 ]
 	then
@@ -124,7 +167,9 @@ function import_host_certs_wsl () {
 		return
 	fi
 		
-	powershell.exe -c '$i=0; foreach($cert in @(Get-ChildItem "cert:\LocalMachine" -recurse | Where-Object { $_.Subject -match "CN='"$1"'" })) { Export-Certificate -Cert $cert -FilePath host-cert$i.cer -Type CERT; $i++ }'
+	TMPDIR="$(mktemp -d)"
+	pushd "$TMPDIR"
+	powershell.exe -c '$i=0; foreach($cert in @(Get-ChildItem "Cert:\CurrentUser\$_" -recurse | Where-Object { $_.Subject -match "CN='"$1"'" })) { Export-Certificate -Cert $cert -FilePath host-cert$i.cer -Type CERT; $i++ }'
 	for cert in host-cert*.cer
 	do
 		newname=${cert%cer}crt
@@ -132,11 +177,15 @@ function import_host_certs_wsl () {
 		sudo mv "$newname" /usr/local/share/ca-certificates/
 		rm "$cert"
 	done
-	sudo update-ca-certificates
+	sudo update-ca-certificates -f
+	popd
 
 }
 
-export PATH=$PATH:/home/keegan/.local/bin
+# turn on fzf autocomplete if available
+if [ -f  "/usr/share/doc/fzf/examples/key-bindings.bash" ]; then
+   source /usr/share/doc/fzf/examples/key-bindings.bash
+fi
 
 export QT_SCALE_FACTOR=1
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
@@ -144,4 +193,6 @@ export QT_SCREEN_SCALE_FACTORS=2
 
 alias dgit='git --git-dir ~/.dotfiles/.git --work-tree=$HOME'
 
-source "$HOME/.cargo/env"
+if [ -f  "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
