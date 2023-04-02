@@ -239,12 +239,13 @@ function __setprompt
 	local LIGHTMAGENTA="\033[1;35m"
 	local CYAN="\033[0;36m"
 	local LIGHTCYAN="\033[1;36m"
+    local BOLD="\033[1m"
 	local NOCOLOR="\033[0m"
 
 	# Show error exit code if there is one
     if [[ $LAST_COMMAND != 0 && $LAST_COMMAND != 148 ]]; then
 		# PS1="\[${RED}\](\[${LIGHTRED}\]ERROR\[${RED}\])-(\[${LIGHTRED}\]Exit Code \[${WHITE}\]${LAST_COMMAND}\[${RED}\])-(\[${LIGHTRED}\]"
-		PS1="\[${DARKGRAY}\](\[${LIGHTRED}\]ERROR\[${DARKGRAY}\])-(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${DARKGRAY}\])-(\[${RED}\]"
+		PS1="\[${NOCOLOR}\](\[${LIGHTRED}\]ERROR\[${NOCOLOR}\])-(\[${RED}\]Exit Code \[${LIGHTRED}\]${LAST_COMMAND}\[${NOCOLOR}\])-(\[${RED}\]"
 		if [[ $LAST_COMMAND == 1 ]]; then
 			PS1+="General error"
 		elif [ $LAST_COMMAND == 2 ]; then
@@ -278,7 +279,7 @@ function __setprompt
 		else
 			PS1+="Unknown error code"
 		fi
-		PS1+="\[${DARKGRAY}\])\[${NOCOLOR}\]\n"
+		PS1+="\[${NOCOLOR}\])\[${NOCOLOR}\]\n"
 	else
 		PS1=""
 	fi
@@ -287,13 +288,13 @@ function __setprompt
     if [ $JOBS -ne "0" ] ; then
         if [ $JOBS -eq "1" ] ; then
 
-            PS1+="\[${DARKGRAY}\](\[${MAGENTA}\]\j"
+            PS1+="\[${NOCOLOR}\](\[${MAGENTA}\]\j"
 
-            PS1+="\[${DARKGRAY}\] Job) "
+            PS1+="\[${NOCOLOR}\] Job) "
         else
-            PS1+="\[${DARKGRAY}\](\[${MAGENTA}\]\j"
+            PS1+="\[${NOCOLOR}\](\[${MAGENTA}\]\j"
 
-            PS1+="\[${DARKGRAY}\] Jobs) "
+            PS1+="\[${NOCOLOR}\] Jobs) "
         fi
 
     fi
@@ -301,13 +302,13 @@ function __setprompt
 	local SSH_IP=`echo $SSH_CLIENT | awk '{ print $1 }'`
 	local SSH2_IP=`echo $SSH2_CLIENT | awk '{ print $1 }'`
 	if [ $SSH2_IP ] || [ $SSH_IP ] ; then
-		PS1+="\[${RED}\]\u@\h"
+		PS1+="\[${GREEN}${BOLD}\]\u@\h"
 	else
-		PS1+="\[${RED}\]\u"
+		PS1+="\[${GREEN}${BOLD}\]\u"
 	fi
 
 	# Current directory
-	PS1+="\[${DARKGRAY}\]:\[${BROWN}\]\w\[${DARKGRAY}\]"
+	PS1+="\[${NOCOLOR}\]:\[${BLUE}\]\w\[${NOCOLOR}\]"
 
     function parse_git_dirty {
         [[ $(git status --porcelain 2> /dev/null) ]] && echo "*"
@@ -320,18 +321,18 @@ function __setprompt
     PS1+="\[${CYAN}\]$(parse_git_branch) "
 
 	if [[ $EUID -ne 0 ]]; then
-		PS1+="\[${GREEN}\]\$\[${NOCOLOR}\] " # Normal user
+		PS1+="\[${NOCOLOR}\]\$\[${NOCOLOR}\] " # Normal user
 	else
 		PS1+="\[${RED}\]\$\[${NOCOLOR}\] " # Root user
 	fi
 
 	# PS2 is used to continue a command using the \ character
-	PS2="\[${DARKGRAY}\]>\[${NOCOLOR}\] "
+	PS2="\[${NOCOLOR}\]>\[${NOCOLOR}\] "
 
 	# PS3 is used to enter a number choice in a script
 	PS3='Please enter a number from above list: '
 
 	# PS4 is used for tracing a script in debug mode
-	PS4='\[${DARKGRAY}\]+\[${NOCOLOR}\] '
+	PS4='\[${NOCOLOR}\]+\[${NOCOLOR}\] '
 }
 PROMPT_COMMAND='__setprompt'
