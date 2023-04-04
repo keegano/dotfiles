@@ -207,6 +207,18 @@ then
     alias vi=nvim
 fi
 
+if command -v fzf &> /dev/null
+then
+    function ffp
+    {
+        # fuzzy find projects
+        # TODO : Make this nicer, try customizable readme locations
+        PROJECTS=$(<.projects)
+        SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --preview "batcat --color=always --style=numbers {}/README.md")
+        cd $SELECTED_PROJECT
+    }
+fi
+
 
 alias home='cd ~'
 alias cd..='cd ..'
@@ -336,3 +348,8 @@ function __setprompt
 	PS4='\[${NOCOLOR}\]+\[${NOCOLOR}\] '
 }
 PROMPT_COMMAND='__setprompt'
+
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
