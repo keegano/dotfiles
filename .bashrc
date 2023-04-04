@@ -215,7 +215,8 @@ then
         # TODO: customizable readme locations
         # TODO: source project-specific dotfiles
         PROJECTS=$(<$HOME/.projects)
-        SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "batcat --color=always --style=numbers {}/README.md")
+        #SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "batcat --color=always --style=numbers {}/README.md")
+        SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "ls -lAF {}")
         cd $SELECTED_PROJECT
     }
 fi
