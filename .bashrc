@@ -209,7 +209,7 @@ fi
 
 if command -v fzf &> /dev/null
 then
-    function ffp
+    function p
     {
         # fuzzy find projects
         # TODO: customizable readme locations
@@ -329,6 +329,19 @@ function __setprompt
     }
     function parse_git_branch {
         git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/ [\1$(parse_git_dirty)]/"
+    }
+
+    function install_fonts {
+        # TODO: don't clone the whole repo, it's huge
+        git clone https://github.com/ryanoasis/nerd-fonts.git "$HOME/.nerd_fonts"
+        pushd "$HOME/.nerd_fonts"
+        if command -v powershell.exe &> /dev/null
+        then
+            # We on Windows
+            powershell.exe -c "./install.ps1 Meslo, JetBrainsMono"
+        else
+            bash ./install.sh Meslo, JetBrainsMono
+        fi
     }
 
     # Git branch
