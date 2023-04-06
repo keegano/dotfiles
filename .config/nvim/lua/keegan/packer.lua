@@ -31,6 +31,12 @@ use 'folke/tokyonight.nvim'
   use("theprimeagen/harpoon")
   use("mbbill/undotree")
   use("tpope/vim-fugitive")
+  use{
+      "stevearc/overseer.nvim",
+      config = function() require('overseer').setup() end
+  }
+  use {'stevearc/dressing.nvim'}
+
 
   use {
 	  'VonHeikemen/lsp-zero.nvim',
