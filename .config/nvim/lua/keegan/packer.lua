@@ -36,6 +36,9 @@ use 'folke/tokyonight.nvim'
       config = function() require('overseer').setup() end
   }
   use {'stevearc/dressing.nvim'}
+  use {"akinsho/toggleterm.nvim", tag = '*', config = function()
+      require("toggleterm").setup()
+  end}
 
 
   use {
