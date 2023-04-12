@@ -159,7 +159,7 @@ EOF
 }
 
 function install_handy_packages () {
-    sudo apt install ripgrep fd-find fzf build-essential git bat
+    sudo apt install ripgrep fd-find fzf build-essential git bat tree
 }
 
 # Broken, don't use
@@ -216,7 +216,7 @@ then
         # TODO: source project-specific dotfiles
         PROJECTS=$(<$HOME/.projects)
         #SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "batcat --color=always --style=numbers {}/README.md")
-        SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "ls -lAF {}")
+        SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "tree -C {} | head -200")
         cd $SELECTED_PROJECT
     }
 fi
