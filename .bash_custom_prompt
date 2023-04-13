@@ -1,0 +1,120 @@
+#!/bin/bash
+
+# Custom prompt generation
+
+# Don't show username on prompt if it's in this list
+HIDE_ALIASES="10141585 keegan kowsley "
+
+
+USERCOLOR="${BGREEN}"
+HOSTCOLOR="${WHITE}"
+
+# Handy function for determining if something is part of a space-delimited list
+function contains {
+    [[ $1 =~ (^|[[:space:]])"$2"($|[[:space:]]) ]] && echo 'yes' || echo 'no' 
+}
+
+function __setprompt
+{
+    local LAST_COMMAND=$? # Must come first!
+
+    # Show error exit code if there is one
+    if [[ $LAST_COMMAND != 0 && $LAST_COMMAND != 148 ]]; then
+        # PS1="\[${RED}\](\[${LIGHTRED}\]ERROR\[${RED}\])-(\[${LIGHTRED}\]Exit Code \[${WHITE}\]${LAST_COMMAND}\[${RED}\])-(\[${LIGHTRED}\]"
+        PS1="\[${COLOR_OFF}\](\[${BRED}\]ERROR\[${COLOR_OFF}\])-(\[${Red}\]Exit Code \[${BRED}\]${LAST_COMMAND}\[${COLOR_OFF}\])-(\[${Red}\]"
+        if [[ $LAST_COMMAND == 1 ]]; then
+            PS1+="General error"
+        elif [ $LAST_COMMAND == 2 ]; then
+            PS1+="Missing keyword, command, or permission problem"
+        elif [ $LAST_COMMAND == 126 ]; then
+            PS1+="Permission problem or command is not an executable"
+        elif [ $LAST_COMMAND == 127 ]; then
+            PS1+="Command not found"
+        elif [ $LAST_COMMAND == 128 ]; then
+            PS1+="Invalid argument to exit"
+        elif [ $LAST_COMMAND == 129 ]; then
+            PS1+="Fatal error signal 1"
+        elif [ $LAST_COMMAND == 130 ]; then
+            # I already know I hit Ctrl+C, don't add it to my prompt
+            # PS1+="Script terminated by Control-C" 
+            :
+        elif [ $LAST_COMMAND == 131 ]; then
+            PS1+="Fatal error signal 3"
+        elif [ $LAST_COMMAND == 132 ]; then
+            PS1+="Fatal error signal 4"
+        elif [ $LAST_COMMAND == 133 ]; then
+            PS1+="Fatal error signal 5"
+        elif [ $LAST_COMMAND == 134 ]; then
+            PS1+="Fatal error signal 6"
+        elif [ $LAST_COMMAND == 135 ]; then
+            PS1+="Fatal error signal 7"
+        elif [ $LAST_COMMAND == 136 ]; then
+            PS1+="Fatal error signal 8"
+        elif [ $LAST_COMMAND == 137 ]; then
+            PS1+="Fatal error signal 9"
+        elif [ $LAST_COMMAND -gt 255 ]; then
+            PS1+="Exit status out of range"
+        else
+            PS1+="Unknown error code"
+        fi
+        PS1+="\[${COLOR_OFF}\])\[${COLOR_OFF}\]\n"
+    else
+        PS1=""
+    fi
+    JOBS="$(jobs -p)"
+
+    PS1+='${JOBS:+'"\[${RED}\][\[${BWHITE}\]\j\[${RED}\]] }"
+
+    # User and server
+    local SSH_IP=`echo $SSH_CLIENT | awk '{ print $1 }'`
+    local SSH2_IP=`echo $SSH2_CLIENT | awk '{ print $1 }'`
+    if [ $SSH2_IP ] || [ $SSH_IP ] ; then
+        PS1="$PS1""\[${PURPLE}\](ssh: "
+        # Only show username if unusual
+        if [ ! `contains "$HIDE_ALIASES" "$USERNAME"` == yes ]; then
+            if [ "$USERNAME" = root ]; then
+                PS1="$PS1""\[${BRED}\]\u\[${CYAN}\]@"
+            else
+                PS1="$PS1""\[${USERCOLOR}\]\u\[${CYAN}\]@"
+            fi
+            PS1="$PS1""\[${HOSTCOLOR}\]\h\[${PURPLE}\]) " # Add indicator if we're on ssh
+            fi
+        else # Attached locally
+            if [ ! `contains "$HIDE_ALIASES" "$USER"` == yes ]; then
+                # Display non-standard user
+                if [ "$USER" = root ]; then
+                    PS1="$PS1\[${BRED}\]\u "
+                else
+                    PS1="$PS1\[${USERCOLOR}\]\u "
+                fi
+            fi
+        fi
+
+
+        function parse_git_dirty {
+            [[ $(git status --porcelain 2> /dev/null) ]] && echo "*"
+        }
+        function parse_git_branch {
+            git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/ [\1$(parse_git_dirty)]/"
+        }
+        GIT_BRANCH="`parse_git_branch`"
+
+        PS1="$PS1\[${CYAN}\]\w\[${RED}\]"'${GIT_BRANCH}'"\[${COLOR_OFF}\]"
+
+        if [[ $EUID -ne 0 ]]; then
+            PS1+=' $ ' # Normal user
+        else
+            PS1+="\[${RED}\]\#\[${COLOR_OFF}\] " # Root user
+        fi
+
+# PS2 is used to continue a command using the \ character
+PS2="\[${COLOR_OFF}\]>\[${COLOR_OFF}\] "
+
+# PS3 is used to enter a number choice in a script
+PS3='Please enter a number from above list: '
+
+# PS4 is used for tracing a script in debug mode
+PS4='\[${COLOR_OFF}\]+\[${COLOR_OFF}\] '
+
+}
+PROMPT_COMMAND='__setprompt'
