@@ -29,7 +29,9 @@ function __setprompt
         elif [ $LAST_COMMAND == 126 ]; then
             PS1+="Permission problem or command is not an executable"
         elif [ $LAST_COMMAND == 127 ]; then
-            PS1+="Command not found"
+            # I already know if a command wasn't found, bash told me
+            # PS1+="Command not found"
+            :
         elif [ $LAST_COMMAND == 128 ]; then
             PS1+="Invalid argument to exit"
         elif [ $LAST_COMMAND == 129 ]; then

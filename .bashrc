@@ -79,10 +79,6 @@ if [ -f "/etc/debian_version" ]; then
 	DEBIAN=y
 fi
 
-# turn on fzf autocomplete if available
-if [ -f  "/usr/share/doc/fzf/examples/key-bindings.bash" ]; then
-   source /usr/share/doc/fzf/examples/key-bindings.bash
-fi
 
 export QT_SCALE_FACTOR=1
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
@@ -90,6 +86,15 @@ export QT_SCREEN_SCALE_FACTORS=2
 
 if [ -f  "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
+fi
+
+# turn on fzf autocomplete if available
+if command -v fzf &> /dev/null
+then
+    # Provides CTRL-T, CTRL-R, ALT-C
+   source "$HOME/.bash_fzf_key_bindings"
+   # Provides a ton of auto-completion
+   source "$HOME/.bash_fzf_completion"
 fi
 
 source "$HOME/.bash_colors"

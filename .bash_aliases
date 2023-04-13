@@ -18,6 +18,10 @@ alias .....='cd ../../../..'
 
 alias bd='cd "$OLDPWD"'
 
+alias mkdir='mkdir -pv'
+alias sha1='openssl sha1'
+alias j='jobs -l'
+
 function install_nvim () {
 	if [ -n "$DEBIAN" ]; then
 		curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb --output nvim-linux64.deb
