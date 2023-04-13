@@ -26,6 +26,7 @@ use 'folke/tokyonight.nvim'
       end
   })
 
+  use("tpope/vim-surround")
 
   use({"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"})
   use("theprimeagen/harpoon")
