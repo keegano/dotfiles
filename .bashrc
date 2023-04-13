@@ -82,20 +82,6 @@ fi
 # colored GCC warnings and errors
 #export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Alias definitions.
-# You may want to put all your additions into a separate file like
-# ~/.bash_aliases, instead of adding them here directly.
-# See /usr/share/doc/bash-doc/examples in the bash-doc package.
-
 if [ -f ~/.bash_aliases ]; then
     . ~/.bash_aliases
 fi
@@ -118,87 +104,6 @@ if [ -f "/etc/debian_version" ]; then
 	DEBIAN=y
 fi
 
-function install_nvim () {
-	if [ -n "$DEBIAN" ]; then
-		curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb --output nvim-linux64.deb
-		sudo apt install ./nvim-linux64.deb
-	else
-		mkdir -p "$HOME/.local/bin"
-		curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output "$HOME/.local/bin/nvim"
-		chmod +x "$HOME/.local/bin/nvim"
-	fi
-	git clone --depth 1 https://github.com/wbthomason/packer.nvim\
- ~/.local/share/nvim/site/pack/packer/start/packer.nvim
-}
-
-function import_host_certs_wsl () {
-    powershell.exe -c - << 'EOF'
-$certificateType = [System.Security.Cryptography.X509Certificates.X509Certificate2]
-
-$includedStores = @("TrustedPublisher", "Root", "CA", "AuthRoot")
-
-$certificates = $includedStores.ForEach({
-    Get-ChildItem Cert:\CurrentUser\$_ | Where-Object { $_ -is $certificateType}
-})
-
-$pemCertificates = $certificates.ForEach({
-    $pemCertificateContent = [System.Convert]::ToBase64String($_.RawData,1)
-    "-----BEGIN CERTIFICATE-----`n${pemCertificateContent}`n-----END CERTIFICATE-----"
-})
-
-$uniquePemCertificates = $pemCertificates | select -Unique
-
-($uniquePemCertificates | Out-String).Replace("`r", "") | Out-File -Encoding UTF8 win-ca-certificates.crt
-EOF
-    NUM_CERTS=$(grep "BEGIN CERTIFICATE" win-ca-certificates.crt | wc -l)
-    echo "Importing $NUM_CERTS certificates from host..."
-    # chomp trailing newline
-    # perl -pi -e 'chomp if eof' win-ca-certificates.crt
-    sudo mv win-ca-certificates.crt /usr/local/share/ca-certificates/
-	sudo update-ca-certificates -f
-}
-
-function install_handy_packages () {
-    sudo apt install ripgrep fd-find fzf build-essential git bat tree
-}
-
-# Broken, don't use
-function import_host_certs_wsl_broken () {
-	# Use powershell to export host certs matching the first argument
-	if [ $# -eq 0 ]
-	then
-		echo "Supply a matching string as argument (eg, 'BD' to match all certs with BD in the name)"
-		return
-	fi
-		
-	TMPDIR="$(mktemp -d)"
-	pushd "$TMPDIR"
-	powershell.exe -c '$i=0; foreach($cert in @(Get-ChildItem "Cert:\CurrentUser\$_" -recurse | Where-Object { $_.Subject -match "CN='"$1"'" })) { Export-Certificate -Cert $cert -FilePath host-cert$i.cer -Type CERT; $i++ }'
-	for cert in host-cert*.cer
-	do
-		newname=${cert%cer}crt
-		openssl x509 -inform der -in "$cert" -out "$newname"
-		sudo mv "$newname" /usr/local/share/ca-certificates/
-		rm "$cert"
-	done
-	sudo update-ca-certificates -f
-	popd
-
-}
-
-function install_fonts {
-    # TODO: don't clone the whole repo, it's huge
-    git clone https://github.com/ryanoasis/nerd-fonts.git "$HOME/.nerd_fonts"
-    pushd "$HOME/.nerd_fonts"
-    if command -v powershell.exe &> /dev/null
-    then
-        # We on Windows
-        powershell.exe -c "./install.ps1 Meslo, JetBrainsMono"
-    else
-        bash ./install.sh Meslo, JetBrainsMono
-    fi
-}
-
 # turn on fzf autocomplete if available
 if [ -f  "/usr/share/doc/fzf/examples/key-bindings.bash" ]; then
    source /usr/share/doc/fzf/examples/key-bindings.bash
@@ -208,42 +113,9 @@ export QT_SCALE_FACTOR=1
 export QT_AUTO_SCREEN_SCALE_FACTOR=0
 export QT_SCREEN_SCALE_FACTORS=2
 
-alias dgit='git --git-dir ~/.dotfiles/.git --work-tree=$HOME'
-
 if [ -f  "$HOME/.cargo/env" ]; then
     source "$HOME/.cargo/env"
 fi
-
-if command -v nvim &> /dev/null
-then
-    alias vim=nvim
-    alias vi=nvim
-fi
-
-if command -v fzf &> /dev/null
-then
-    function p
-    {
-        # fuzzy find projects
-        # TODO: customizable readme locations
-        # TODO: source project-specific dotfiles
-        PROJECTS=$(<$HOME/.projects)
-        #SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "batcat --color=always --style=numbers {}/README.md")
-        SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "tree -C {} | head -200")
-        cd $SELECTED_PROJECT
-    }
-fi
-
-
-alias home='cd ~'
-alias cd..='cd ..'
-alias ..='cd ..'
-alias ...='cd ../..'
-alias ....='cd ../../..'
-alias .....='cd ../../../..'
-
-alias bd='cd "$OLDPWD"'
-
 
 # Custom prompt generation
 # Don't show username on prompt if it's in this list
@@ -323,8 +195,8 @@ ON_IPURPLE='\e[0;105m'  # Purple
 ON_ICYAN='\e[0;106m'    # Cyan
 ON_IWHITE='\e[0;107m' # White
 
-USERCOLOR="${BGreen}"
-HOSTCOLOR="${White}"
+USERCOLOR="${BGREEN}"
+HOSTCOLOR="${WHITE}"
 
 # Handy function for determining if something is part of a space-delimited list
 function contains {
