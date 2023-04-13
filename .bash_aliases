@@ -63,7 +63,7 @@ EOF
 }
 
 function install_handy_packages () {
-    sudo apt install ripgrep fd-find fzf build-essential git bat tree
+    sudo apt install ripgrep fd-find fzf build-essential git bat tree tmux
 }
 
 function install_fonts {
