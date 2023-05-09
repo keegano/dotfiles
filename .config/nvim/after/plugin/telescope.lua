@@ -5,5 +5,12 @@ vim.keymap.set('n', '<leader>ps', function()
 	builtin.grep_string({ search = vim.fn.input("Grep > ") })
 end)
 vim.keymap.set("n", "<leader>dd", builtin.diagnostics)
-vim.keymap.set('v', '<leader>ps', builtin.grep_string)
+local function get_visual_selection()
+    -- Yank visual selection into `v` register
+    vim.cmd('noau normal! "vy"')
+    return vim.fn.getreg('v')
+end
+vim.keymap.set('v', '<leader>ps', function()
+    builtin.grep_string({ search = get_visual_selection() })
+end)
 vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
