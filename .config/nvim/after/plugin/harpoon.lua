@@ -1,6 +1,8 @@
 local mark = require("harpoon.mark")
 local ui = require("harpoon.ui")
 
+ -- Harpoon usage: Mark open files with <space>a, view list of marked files with C-e,
+ -- instantly nav to first four items with C-j,k,l,;
 vim.keymap.set("n", "<leader>a", mark.add_file)
 vim.keymap.set("n", "<C-e>", ui.toggle_quick_menu)
 
