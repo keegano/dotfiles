@@ -17,6 +17,12 @@ shopt -s histappend
 HISTSIZE=1000
 HISTFILESIZE=2000
 
+if [[ $(grep Microsoft /proc/version) ]]; then
+    # We are on WSL. Make my life easier by opening Windows chrome when you want
+    # a browser.
+    export BROWSER=chrome.exe
+fi
+
 # Disable the bell
 if [[ $iatest > 0 ]]; then bind "set bell-style visible"; fi
 

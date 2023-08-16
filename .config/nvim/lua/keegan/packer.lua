@@ -32,6 +32,7 @@ use 'folke/tokyonight.nvim'
   use("theprimeagen/harpoon")
   use("mbbill/undotree")
   use("tpope/vim-fugitive")
+      use("cedarbaum/fugitive-azure-devops.vim")
   use{
       "stevearc/overseer.nvim",
       config = function() require('overseer').setup() end
