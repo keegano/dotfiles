@@ -74,9 +74,23 @@ function install_fonts {
     then
         # We on Windows
         powershell.exe -c "./install.ps1 Meslo, JetBrainsMono"
+        # Also, let's connect up any fonts we've installed in Windows so they're
+        # available in the VM (eg, for Inkscape)
+        enable_windows_fonts
+
     else
         bash ./install.sh Meslo, JetBrainsMono
     fi
+}
+
+function enable_windows_fonts {
+        sudo tee /etc/fonts/local.conf << 'EOF'
+<?xml version="1.0"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+    <dir>/mnt/c/Windows/Fonts</dir>
+</fontconfig>
+EOF
 }
 
 if command -v fzf &> /dev/null
