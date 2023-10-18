@@ -8,6 +8,7 @@ lsp.ensure_installed({
   'lua_ls',
   'bashls',
   'clangd',
+  'jdtls',
   'jedi_language_server'
 })
 
