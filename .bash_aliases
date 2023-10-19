@@ -103,7 +103,24 @@ then
         PROJECTS=$(<$HOME/.projects)
         #SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "batcat --color=always --style=numbers {}/README.md")
         SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "tree -C {} | head -200")
-        cd $SELECTED_PROJECT
+
+        if [[ -z $SELECTED_PROJECT ]]; then
+            exit 0
+        fi
+
+        SELECTED_NAME=$(basename "$SELECTED_PROJECT" | tr . _)
+        tmux_running=$(pgrep tmux)
+
+        if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
+            tmux new-session -s "$SELECTED_NAME" -c "$SELECTED_PROJECT"
+            exit 0
+        fi
+
+        if ! tmux has-session -t="$SELECTED_NAME" 2> /dev/null; then
+            tmux new-session -ds "$SELECTED_NAME" -c "$SELECTED_PROJECT"
+        fi
+
+        tmux switch-client -t "$SELECTED_NAME"
     }
 fi
 
