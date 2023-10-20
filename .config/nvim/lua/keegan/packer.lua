@@ -42,6 +42,9 @@ use 'folke/tokyonight.nvim'
       require("toggleterm").setup()
   end}
 
+  -- use {'HiPhish/jinja.vim'}
+  use {'mitsuhiko/vim-jinja'}
+
 
   use {
 	  'VonHeikemen/lsp-zero.nvim',

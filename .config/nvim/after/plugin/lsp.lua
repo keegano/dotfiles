@@ -9,8 +9,11 @@ lsp.ensure_installed({
   'bashls',
   'clangd',
   'jdtls',
-  'jedi_language_server'
+  'jedi_language_server',
+  'html',
+  'cssls'
 })
+
 
 local lspconf = require('lspconfig')
 
@@ -39,6 +42,15 @@ lspconf.lua_ls.setup {
 
 lspconf.jedi_language_server.setup{}
 lspconf.bashls.setup{}
+lspconf.html.setup{
+    filetypes = {"html", "htmldjango"},
+    configurationSection = { "html", "css", "javascript" },
+    embeddedLanguages = {
+        css = true,
+        javascript = true
+    },
+    provideFormatter = true
+}
 
 local cmp = require('cmp')
 local cmp_select = {behavior = cmp.SelectBehavior.Select}
