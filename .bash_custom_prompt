@@ -30,8 +30,8 @@ if [ $SSH2_IP ] || [ $SSH_IP ] ; then
         else
             PS1="$PS1""\[${USERCOLOR}\]\u\[${CYAN}\]@"
         fi
-        PS1="$PS1""\[${HOSTCOLOR}\]\h\[${PURPLE}\]) " # Add indicator if we're on ssh
     fi
+    PS1="$PS1""\[${HOSTCOLOR}\]\h\[${PURPLE}\]) " # Add indicator if we're on ssh
 else # Attached locally
     if [ ! `contains "$HIDE_ALIASES" "$USER"` == yes ] ; then
        # Display non-standard user
