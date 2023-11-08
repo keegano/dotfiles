@@ -16,12 +16,17 @@ SELECTED_NAME=$(basename "$SELECTED_PROJECT" | tr . _)
 tmux_running=$(pgrep tmux)
 
 if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s "$SELECTED_NAME" -c "$SELECTED_PROJECT"
-    exit 0
+    tmux new-session -ds "$SELECTED_NAME" -c "$SELECTED_PROJECT"
+    if [ -d $SELECTED_PROJECT/venv-linux ]; then
+        tmux send-keys -t "$SELECTED_NAME" "source venv-linux/bin/activate; clear" C-m
+    fi
 fi
 
 if ! tmux has-session -t="$SELECTED_NAME" 2> /dev/null; then
     tmux new-session -ds "$SELECTED_NAME" -c "$SELECTED_PROJECT"
+    if [ -d $SELECTED_PROJECT/venv-linux ]; then
+        tmux send-keys -t "$SELECTED_NAME" "source venv-linux/bin/activate; clear" C-m
+    fi
 fi
 
 tmux switch-client -t "$SELECTED_NAME"
