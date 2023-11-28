@@ -46,17 +46,17 @@ vim.opt.updatetime = 50
 vim.opt.colorcolumn = "80"
 
  -- Copy/paste across WSL
-vim.g.clipboard = {
-    name = "WslClipboard",
-    copy = {
-        ["+"] = "clip.exe",
-        ["*"] = "clip.exe"
-    },
-    paste = {
-        ["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
-        ["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))'
-    },
-    cache_enabled = 0,
-}
+-- vim.g.clipboard = {
+--     name = "WslClipboard",
+--     copy = {
+--         ["+"] = "clip.exe",
+--         ["*"] = "clip.exe"
+--     },
+--     paste = {
+--         ["+"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))',
+--         ["*"] = 'powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace("`r", ""))'
+--     },
+--     cache_enabled = 0,
+-- }
 
 

@@ -23,14 +23,9 @@ alias sha1='openssl sha1'
 alias j='jobs -l'
 
 function install_nvim () {
-	if [ -n "$DEBIAN" ]; then
-		curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim-linux64.deb --output nvim-linux64.deb
-		sudo apt install ./nvim-linux64.deb
-	else
-		mkdir -p "$HOME/.local/bin"
-		curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output "$HOME/.local/bin/nvim"
-		chmod +x "$HOME/.local/bin/nvim"
-	fi
+    mkdir -p "$HOME/.local/bin"
+    curl -L https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage --output "$HOME/.local/bin/nvim"
+    chmod +x "$HOME/.local/bin/nvim"
 	git clone --depth 1 https://github.com/wbthomason/packer.nvim\
  ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 }
@@ -63,7 +58,7 @@ EOF
 }
 
 function install_handy_packages () {
-    sudo apt install ripgrep fd-find fzf build-essential git bat tree tmux
+    sudo apt install ripgrep fd-find fzf build-essential git bat tree tmux nodejs
 }
 
 function install_fonts {

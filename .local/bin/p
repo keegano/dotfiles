@@ -6,10 +6,27 @@
 # TODO: source project-specific dotfiles
 PROJECTS=$(<$HOME/.projects)
 #SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "batcat --color=always --style=numbers {}/README.md")
-SELECTED_PROJECT=$(echo "$PROJECTS" | fzf --query="$1" -1 --preview "tree -C {} | head -200")
+SELECTED_PROJECT=$(echo "$PROJECTS"$'\n'"Create new project..." | fzf --query="$1" -1 --preview "tree -C {} | head -200")
 
 if [[ -z $SELECTED_PROJECT ]]; then
     exit 0
+fi
+
+if [ "$SELECTED_PROJECT" == "Create new project..." ]; then
+    PROJECT_DIRS=$(echo "$PROJECTS" | sed 's#/[^/]*$##' | sort | uniq)
+    SELECTED_DIR=$(echo "$PROJECT_DIRS" | fzf --prompt 'Select Project Directory> ' -1 --preview "tree -C {} | head -200")
+    if [[ -z $SELECTED_DIR ]]; then
+        exit 0
+    fi
+    SELECTED_PROJECT_NAME=$(whiptail --inputbox "What shall we name the project?" 8 39 new_project 3>&1 1>&2 2>&3)
+    exitcode=$?
+    SELECTED_PROJECT="$SELECTED_DIR/$SELECTED_PROJECT_NAME"
+    if [ $exitcode == 0 ]; then
+        mkdir -p "$SELECTED_PROJECT"
+        echo "$SELECTED_PROJECT" >> $HOME/.projects
+    else
+        exit 0
+    fi
 fi
 
 SELECTED_NAME=$(basename "$SELECTED_PROJECT" | tr . _)
