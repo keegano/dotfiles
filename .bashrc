@@ -109,3 +109,4 @@ fi
 
 source "$HOME/.bash_colors"
 source "$HOME/.bash_custom_prompt"
+. "$HOME/.cargo/env"

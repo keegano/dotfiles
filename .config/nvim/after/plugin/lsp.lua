@@ -7,7 +7,9 @@ lsp.ensure_installed({
   'rust_analyzer',
   'lua_ls',
   'bashls',
+  'sqlls',
   'clangd',
+  'texlab',
   'jdtls',
   'jedi_language_server',
   'html',
@@ -16,6 +18,17 @@ lsp.ensure_installed({
 
 
 local lspconf = require('lspconfig')
+
+lspconf.sqlls.setup{}
+
+lspconf.texlab.setup{}
+
+lspconf.clangd.setup{
+  cmd = {
+      "clangd",
+      "--query-driver=/opt/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-gcc"
+  }
+}
 
 lspconf.lua_ls.setup {
   settings = {

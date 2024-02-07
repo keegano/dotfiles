@@ -58,5 +58,3 @@ vim.opt.colorcolumn = "80"
 --     },
 --     cache_enabled = 0,
 -- }
-
-
