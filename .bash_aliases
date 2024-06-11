@@ -52,9 +52,12 @@ EOF
     NUM_CERTS=$(grep "BEGIN CERTIFICATE" win-ca-certificates.crt | wc -l)
     echo "Importing $NUM_CERTS certificates from host..."
     # chomp trailing newline
-    # perl -pi -e 'chomp if eof' win-ca-certificates.crt
+    sed -i 's/\r$//' win-ca-certificates.crt
+    perl -pi -e 'chomp if eof' win-ca-certificates.crt
     sudo mv win-ca-certificates.crt /usr/local/share/ca-certificates/
-	sudo update-ca-certificates -f
+    sudo csplit --digits=2 --quiet --prefix=/usr/local/share/ca-certificates/win-ca-certs -b ".%02d.crt" /usr/local/share/ca-certificates/win-ca-certificates.crt "/-----END CERTIFICATE-----/+1" "{*}"
+    sudo rm /usr/local/share/ca-certificates/win-ca-certificates.crt
+    sudo update-ca-certificates -f
 }
 
 function install_handy_packages () {
