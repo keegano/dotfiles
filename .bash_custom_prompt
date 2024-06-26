@@ -43,7 +43,7 @@ else # Attached locally
     fi
 fi
 
-PS1="$PS1\[${CYAN}\]\w\[${RED}\]"'${GIT_BRANCH}'"\[${COLOR_OFF}\]""${PROMPT_END_MARK}"
+PS1="$PS1\[${CYAN}\]\w\[${GREEN}\]"'${GIT_BRANCH}'"\[${COLOR_OFF}\]""${PROMPT_END_MARK}"
 LAST_COMMAND=
 ERROR=
 
