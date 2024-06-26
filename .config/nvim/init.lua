@@ -548,10 +548,23 @@ require('lazy').setup {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        clangd = {
+          cmd = {
+            'clangd',
+            '--background-index',
+            '--suggest-missing-includes',
+            '--header-insertion=iwyu',
+            '--header-insertion-decorators=0',
+            '--cross-file-rename',
+            '--clang-tidy',
+            '--completion-style=detailed',
+            '--query-driver=/opt/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-gcc',
+          },
+        },
         -- gopls = {},
         pyright = {},
         texlab = {},
+        omnisharp = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -620,6 +633,7 @@ require('lazy').setup {
       }
     end,
   },
+  { 'https://github.com/aklt/plantuml-syntax' },
 
   { -- Autoformat
     'stevearc/conform.nvim',
