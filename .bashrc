@@ -78,7 +78,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export PATH=$PATH:/home/keegan/.local/bin
+export PATH=$PATH:$HOME/.local/bin
 
 # Are we Debian?
 if [ -f "/etc/debian_version" ]; then

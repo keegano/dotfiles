@@ -43,7 +43,7 @@ else # Attached locally
     fi
 fi
 
-PS1="$PS1\[${CYAN}\]\w\[${RED}\]"'${GIT_BRANCH}'"\[${COLOR_OFF}\]"'${PROMPT_END_MARK}'
+PS1="$PS1\[${CYAN}\]\w\[${RED}\]"'${GIT_BRANCH}'"\[${COLOR_OFF}\]""${PROMPT_END_MARK}"
 LAST_COMMAND=
 ERROR=
 
@@ -106,7 +106,7 @@ function __setprompt
 if [[ $EUID -ne 0 ]]; then
     PROMPT_END_MARK=' $ ' # Normal user
 else
-    PROMPT_END_MARK=" \[${RED}\]\#\[${COLOR_OFF}\] " # Root user
+    PROMPT_END_MARK=" \[${RED}\]#\[${COLOR_OFF}\] " # Root user
 fi
 
 }
