@@ -106,7 +106,7 @@ function __setprompt
 if [[ $EUID -ne 0 ]]; then
     PROMPT_END_MARK=' $ ' # Normal user
 else
-    PROMPT_END_MARK=" \[${RED}\]\\#\[${COLOR_OFF}\] " # Root user
+    PROMPT_END_MARK=" \[${RED}\]#\[${COLOR_OFF}\] " # Root user
 fi
 
 }
