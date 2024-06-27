@@ -634,7 +634,8 @@ require('lazy').setup {
     end,
   },
   { 'https://github.com/aklt/plantuml-syntax' },
-
+  -- Don't autoformat on save, pollutes your commits with style changes
+  --[[
   { -- Autoformat
     'stevearc/conform.nvim',
     opts = {
@@ -654,6 +655,7 @@ require('lazy').setup {
       },
     },
   },
+  --]]
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
