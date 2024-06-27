@@ -43,7 +43,7 @@ else # Attached locally
     fi
 fi
 
-PS1="$PS1\[${CYAN}\]\w\[${GREEN}\]"'${GIT_BRANCH}'"\[${COLOR_OFF}\]""${PROMPT_END_MARK}"
+_PS1="$PS1\[${CYAN}\]\w\[${GREEN}\]"'${GIT_BRANCH}'"\[${COLOR_OFF}\]"
 LAST_COMMAND=
 ERROR=
 
@@ -109,6 +109,7 @@ else
     PROMPT_END_MARK=" \[${RED}\]#\[${COLOR_OFF}\] " # Root user
 fi
 
+PS1="${_PS1}${PROMPT_END_MARK}"
 }
 #
 # PS2 is used to continue a command using the \ character
