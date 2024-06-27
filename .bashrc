@@ -78,7 +78,7 @@ if ! shopt -oq posix; then
   fi
 fi
 
-export PATH=$PATH:$HOME/.local/bin
+export PATH=$PATH:$HOME/.local/bin:$HOME/.cargo/bin
 
 # Are we Debian?
 if [ -f "/etc/debian_version" ]; then
@@ -109,4 +109,4 @@ fi
 
 source "$HOME/.bash_colors"
 source "$HOME/.bash_custom_prompt"
-. "$HOME/.cargo/env"
+
